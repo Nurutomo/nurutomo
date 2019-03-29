@@ -1,2 +1,2 @@
-# nurutomo
-My Website at Heroku
+# Nurutomo
+Testing my website on heroku
