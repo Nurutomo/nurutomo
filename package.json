@@ -2,7 +2,7 @@
   "name": "simplechatapp",
   "version": "1.0.0",
   "description": "Simple chat app built with node.js and socket.io",
-  "main": "app.js",
+  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon app"
