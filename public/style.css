@@ -28,9 +28,28 @@ div.tab-pane *:nth-child(1) {
 	margin-top: 0.5vw;
 }
 
-#chat {
-	height: calc(60vh - 1vmin);
-	overflow-y: auto;
-	overflow-x: hidden;
-	width: 100%;
+.nb-tl {
+	border-top-left-radius: 0px;
+}
+
+.nb-bl {
+	border-bottom-left-radius: 0px;
+}
+
+.nb-tr {
+	border-top-right-radius: 0px;
+}
+
+.nb-br {
+	border-bottom-right-radius: 0px;
+}
+
+.nb-b {
+	border-bottom-left-radius: 0px;
+	border-bottom-right-radius: 0px;
+}
+
+.nb-t {
+	border-top-left-radius: 0px;
+	border-top-right-radius: 0px;
 }
