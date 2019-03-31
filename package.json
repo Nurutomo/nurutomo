@@ -2,7 +2,7 @@
   "name": "nurutomo",
   "version": "0.1",
   "engines": {
-    "node": "8.11.1"
+    "node": "5.7.1"
   },
   "main": "index.js",
   "scripts": {
