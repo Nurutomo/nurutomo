@@ -1,12 +1,31 @@
 {
   "name": "nurutomo",
   "version": "0.1",
+  "description": "Nurutomo's Website",
+  "engines": {
+    "node": "10.x"
+  },
   "main": "index.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.js",
+    "test": "node test.js"
   },
   "dependencies": {
     "ejs": "^2.5.6",
-    "express": "^4.15.2"
-  }
+    "express": "^4.15.2",
+    "socket.io": "^2.2.0"
+  },
+  "devDependencies": {
+    "request": "^2.81.0",
+    "tape": "^4.7.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Nurutomo/nurutomo"
+  },
+  "keywords": [
+    "node",
+    "nurutomo",
+    "express"
+  ]
 }

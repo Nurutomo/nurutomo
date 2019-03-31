@@ -1,28 +1,21 @@
-const express = require('express');
-const app = express();
-const SocketIO = require("socket.io");
-const ejs = require('ejs');
-
-//set the template engine ejs
-app.set('view engine', 'ejs');
-
-//middlewares
-app.use(express.static('public'));
-
-//routes
-app.get('/', (req, res) => {
-	res.render('index');
-});
-
-//Listen on port
-server = app.listen(process.env.PORT || 5000);
-
-//socket.io instantiation
-const io = SocketIO(server);
+const express = require('express')
+const path = require('path')
+const PORT = process.env.PORT || 5000
+const app = express()
+  .use(express.static(path.join(__dirname, 'public')))
+  .set('views', path.join(__dirname, 'views'))
+  .set('view engine', 'ejs')
+  .get('/', (req, res) => res.render('index'))
+  .listen(PORT, () => console.log(`Listening on ${ PORT }`))
+const io = require('socket.io')(app);
 
 //listen on every connection
 io.on('connection', (socket) => {
-	socket.on(0, (e) => {
-		socket.broadcast.emit(0, e);
-	});
-});
+	socket.on('0', (e) => {
+		socket.emit('0', e)
+		console.log('Transfering:', e)
+	})
+
+	
+	socket.emit('0', 'OOF')
+})
