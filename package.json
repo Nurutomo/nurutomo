@@ -1,6 +1,6 @@
 {
   "name": "nurutomo",
-  "version": "0.1",
+  "version": "1.0.0",
   "description": "Nurutomo's Website",
   "engines": {
     "node": "10.x"
