@@ -69,7 +69,7 @@ io.on('connection', (socket) => {
             		width: 1920,
             		height: 1080
         	},
-        	timeout: 120000
+        	timeout: 120000,
     		args: [
         		"--incognito",
         		"--no-sandbox",
