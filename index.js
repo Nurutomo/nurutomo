@@ -16,7 +16,24 @@ const app = express()
 			...req.query
 		}
 		if (url) {
-			const page = await global.browser.newPage()
+			const chromeOptions = {
+	    			headless: true,
+		    		defaultViewport: {
+		            		width: 1920,
+		            		height: 1080
+		        	},
+		        	timeout: 120000,
+		    		args: [
+		        		"--incognito",
+		        		"--no-sandbox",
+		        		"--single-process",
+		        		"--no-zygote",
+					"--no-cache"
+	    			],
+			}
+			const browser = await puppeteer.launch(chromeOptions);
+    			console.log('Browser Launched')
+			const page = await browser.newPage()
 			await page.goto(url, {
 				waitUntil: 'load',
 				timeout: 300000
@@ -27,6 +44,7 @@ const app = express()
 				encoding: 'base64',
 				fullPage: !!full
 			})
+			await browser.close();
 			res.writeHead(200, {
 				'Content-Type': 'image/png',
 				'Content-Length': screenshot.length
@@ -62,23 +80,6 @@ io.on('connection', (socket) => {
 })*/
 
 (async () => {
-	const chromeOptions = {
-    		headless: true,
-    		defaultViewport: {
-            		width: 1920,
-            		height: 1080
-        	},
-        	timeout: 120000,
-    		args: [
-        		"--incognito",
-        		"--no-sandbox",
-        		"--single-process",
-        		"--no-zygote",
-			"--no-cache"
-    		],
-	}
-	global.browser = await puppeteer.launch(chromeOptions);
-    	console.log('Browser Launched')
 })()
 
 function sleep(ms) {
