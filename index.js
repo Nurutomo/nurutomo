@@ -16,7 +16,7 @@ const app = express()
 			...req.query
 		}
 		if (url) {
-			const page = await browser.newPage()
+			const page = await global.browser.newPage()
 			await page.goto(url, {
 				waitUntil: 'load',
 				timeout: 300000
@@ -49,7 +49,7 @@ const app = express()
   	res.status(404)
   })
   .listen(PORT, () => console.log(`Listening on ${ PORT }`))
-const io = require('socket.io')(app);
+/*const io = require('socket.io')(app);
 
 //listen on every connection
 io.on('connection', (socket) => {
@@ -58,9 +58,8 @@ io.on('connection', (socket) => {
 		console.log('Transfering:', e)
 	})
 
-	
 	socket.emit('0', 'OOF')
-})
+})*/
 
 (async () => {
 	const chromeOptions = {
