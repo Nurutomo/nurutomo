@@ -41,7 +41,6 @@ const app = express()
 			if (delay > 0) await sleep(delay)
 			const screenshot = await page.screenshot({
 				type: 'png',
-				encoding: 'base64',
 				fullPage: !!full
 			})
 			await browser.close();
