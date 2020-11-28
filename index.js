@@ -79,9 +79,6 @@ io.on('connection', (socket) => {
 	socket.emit('0', 'OOF')
 })*/
 
-(async () => {
-})()
-
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms))
 }
