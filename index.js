@@ -46,7 +46,7 @@ const app = express()
 	  }
   })
   .get('*', function(req, res){
-  	res.status(404).send('404 Not Found')
+  	res.status(404)
   })
   .listen(PORT, () => console.log(`Listening on ${ PORT }`))
 const io = require('socket.io')(app);
@@ -74,7 +74,8 @@ io.on('connection', (socket) => {
         		"--incognito",
         		"--no-sandbox",
         		"--single-process",
-        		"--no-zygote"
+        		"--no-zygote",
+			"--no-cache"
     		],
 	}
 	global.browser = await puppeteer.launch(chromeOptions);
