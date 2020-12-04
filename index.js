@@ -99,9 +99,9 @@ const io = require('socket.io')(app);
 //listen on every connection
 io.on('connection', (socket) => {
     socket.emit('memoryUsage', process.memoryUsage())
+    let mem = setInterval(io.emit, 2500, 'memoryUsage', process.memoryUsage())
+    socket.on('disconnected', () => clearInterval(mem))
 })
-
-setInterval(io.emit, 2500, 'memoryUsage', process.memoryUsage())
 
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms))
