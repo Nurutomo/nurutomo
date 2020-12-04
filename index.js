@@ -36,7 +36,7 @@ const app = express()
 		} else {
 			res.status(501).json({
 				error: 'parameter \'url\' not provided',
-				hint: '/api/ssweb?url=http://example.com'
+				hint: '/api/ssweb?url=http://example.com',
 				status: 501
 			})
 		}
