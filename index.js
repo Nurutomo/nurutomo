@@ -97,9 +97,9 @@ const app = express()
 const io = require('socket.io')(app);
 
 //listen on every connection
-io.on('connection', (socket) => {
+io.on('connection', socket => {
     socket.emit('memoryUsage', process.memoryUsage())
-    let mem = setInterval(io.emit, 2500, 'memoryUsage', process.memoryUsage())
+    let mem = setInterval(socket.emit, 2500, 'memoryUsage', process.memoryUsage())
     socket.on('disconnected', () => clearInterval(mem))
 })
 
