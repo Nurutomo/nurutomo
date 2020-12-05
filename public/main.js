@@ -6,8 +6,10 @@ socket.on('memoryUsage', e => {
 	let list = []
 	let div = document.querySelector('div#usage')
 	for (key in e) list.push(`<pre><code>${key}: ${e[key]}</code></pre>`)
-	div.innerHTML = list.join('<br>')
+	div.innerHTML = list.join('')
 })
+
+setInterval(socket.emit, 2500, 'memoryUsage')
 /*
 document.addEventListener('keypress', (e) => {
 	socket.emit('0', e.key)
