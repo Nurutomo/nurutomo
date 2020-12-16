@@ -27,8 +27,8 @@ const app = express()
                 url: '',
                 full: false,
                 delay: 0,
-                type: 'png'
-                    ...req.query
+                type: 'png',
+                ...req.query
             }
             type = type.toLowerCase()
             if (!type in CONSTANT.mimetype) type = 'png'
