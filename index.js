@@ -69,7 +69,7 @@ const app = express()
             let {
                 code,
                 apikey,
-                type
+                type,
                 quality
             } = {
                 code: '',
