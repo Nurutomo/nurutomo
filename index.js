@@ -2,6 +2,15 @@ const puppeteer = require('puppeteer')
 const express = require('express')
 const path = require('path')
 const PORT = process.env.PORT || 5000
+const CONSTANT = {
+    mimetype: {
+        png: 'image/png',
+        jpg: 'image/jpeg',
+        jpeg: 'image/jpeg',
+        webp: 'image/webp'
+    }
+}
+
 const app = express()
     .use(express.static(path.join(__dirname, 'public')))
     .set('views', path.join(__dirname, 'views'))
@@ -12,13 +21,17 @@ const app = express()
             let {
                 url,
                 full,
-                delay
+                delay,
+                type
             } = {
                 url: '',
                 full: false,
                 delay: 0,
-                ...req.query
+                type: 'png'
+                    ...req.query
             }
+            type = type.toLowerCase()
+            if (!type in CONSTANT.mimetype) type = 'png'
             if (url) {
                 const browser = await getBrowser()
                 const page = await browser.newPage()
@@ -28,12 +41,12 @@ const app = express()
                 })
                 if (delay > 0) await sleep(delay)
                 const screenshot = await page.screenshot({
-                    type: 'png',
+                    type,
                     fullPage: full ? full != 'false' : false
                 })
                 await browser.close();
                 res.writeHead(200, {
-                    'Content-Type': 'image/png',
+                    'Content-Type': CONSTANT.mimetype[type],
                     'Content-Length': screenshot.length
                 });
                 res.end(screenshot);
@@ -55,27 +68,40 @@ const app = express()
         try {
             let {
                 code,
-                apikey
+                apikey,
+                type
+                quality
             } = {
                 code: '',
+                type: 'png',
+                quality: 90,
                 ...req.query
             }
             if (process.env.API_KEY && process.env.API_KEY != apikey) return res.json({
                 result: 'apikey invalid'
             })
+            type = type.toLowerCase()
+            const mimetype = CONSTANT.mimetype[type] || CONSTANT.mimetype.png
             const browser = await getBrowser()
             const page = await browser.newPage()
             code = `try{\n${code}\n} catch (e) {}`
-            const base64 = await page.evaluate(async function(code) {
+            setTimeout(async () => {
+                browser.close()
+                res.status(201).json({
+                    error: 'Timeout limit exceeded',
+                    status: 201
+                })
+            }, 120000)
+            const base64 = await page.evaluate(async function(code, mimetype, quality) {
                 let c = document.createElement('canvas')
                 let ctx = c.getContext('2d')
                 await (new(async () => {}).constructor('c', 'ctx', 'Image', code))(c, ctx, Image)
-                return c.toDataURL().split `,` [1]
-            }, code)
+                return c.toDataURL(mimetype, quality).split `,` [1]
+            }, code, mimetype, quality)
             await browser.close();
             const image = Buffer.from(base64, 'base64')
             res.writeHead(200, {
-                'Content-Type': 'image/png',
+                'Content-Type': mimetype,
                 'Content-Length': image.length
             })
             res.end(image)
