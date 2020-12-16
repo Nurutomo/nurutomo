@@ -74,18 +74,19 @@ const app = express()
             } = {
                 code: '',
                 type: 'png',
-                quality: 90,
+                quality: 0.92,
                 ...req.query
             }
             if (process.env.API_KEY && process.env.API_KEY != apikey) return res.json({
                 result: 'apikey invalid'
             })
             type = type.toLowerCase()
+            quality = Math.max(0, Math.min(quality, 1))
             const mimetype = CONSTANT.mimetype[type] || CONSTANT.mimetype.png
             const browser = await getBrowser()
             const page = await browser.newPage()
             code = `try{\n${code}\n} catch (e) {}`
-            setTimeout(async () => {
+            let timeout = setTimeout(async () => {
                 browser.close()
                 res.status(201).json({
                     error: 'Timeout limit exceeded',
@@ -96,8 +97,9 @@ const app = express()
                 let c = document.createElement('canvas')
                 let ctx = c.getContext('2d')
                 await (new(async () => {}).constructor('c', 'ctx', 'Image', code))(c, ctx, Image)
-                return c.toDataURL(mimetype, quality).split `,` [1]
+                return (/png/.test(mimetype) ? c.toDataURL(mimetype) : c.toDataURL(mimetype, quality)).split `,` [1]
             }, code, mimetype, quality)
+            clearTimeout(timeout)
             await browser.close();
             const image = Buffer.from(base64, 'base64')
             res.writeHead(200, {
