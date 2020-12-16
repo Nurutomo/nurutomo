@@ -44,12 +44,12 @@ const app = express()
                     type,
                     fullPage: full ? full != 'false' : false
                 })
-                await browser.close();
+                await browser.close()
                 res.writeHead(200, {
                     'Content-Type': CONSTANT.mimetype[type],
                     'Content-Length': screenshot.length
                 });
-                res.end(screenshot);
+                res.end(screenshot)
             } else {
                 res.status(501).json({
                     error: 'parameter \'url\' not provided',
@@ -83,25 +83,30 @@ const app = express()
             type = type.toLowerCase()
             quality = Math.max(0, Math.min(quality, 1))
             const mimetype = CONSTANT.mimetype[type] || CONSTANT.mimetype.png
+            log(type, quality, mimetype, req.query)
             const browser = await getBrowser()
+
             const page = await browser.newPage()
-            code = `try{\n${code}\n} catch (e) {}`
-            let timeout = setTimeout(async () => {
+            code = `try{\n${code}\n} catch (e) {\n slog(e)\n}`
+            log(code)
+            let timeout = setTimeout(() => {
+                log('timed out')
                 browser.close()
                 res.status(201).json({
                     error: 'Timeout limit exceeded',
                     status: 201
                 })
             }, 120000)
-            const base64 = await page.evaluate(async function(code, mimetype, quality) {
+            const base64 = await page.evaluate(async function(code, mimetype, quality, slog) {
                 let c = document.createElement('canvas')
                 let ctx = c.getContext('2d')
-                await (new(async () => {}).constructor('c', 'ctx', 'Image', code))(c, ctx, Image)
+                await (new(async () => {}).constructor('c', 'ctx', 'Image', 'slog', code))(c, ctx, Image, slog)
                 return (/png/.test(mimetype) ? c.toDataURL(mimetype) : c.toDataURL(mimetype, quality)).split `,` [1]
-            }, code, mimetype, quality)
+            }, code, mimetype, quality, console.log)
             clearTimeout(timeout)
-            await browser.close();
+            await browser.close()
             const image = Buffer.from(base64, 'base64')
+            log(image)
             res.writeHead(200, {
                 'Content-Type': mimetype,
                 'Content-Length': image.length
