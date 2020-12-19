@@ -1,6 +1,7 @@
 const swaggerUi = require('swagger-ui-express')
+let puppeteer
 try {
-    const puppeteer = process.argv.includes('--swagger-only') ? {
+    puppeteer = process.argv.includes('--swagger-only') ? {
         launch: Object
     } : require('puppeteer')
 } catch (e) {
