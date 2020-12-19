@@ -1,4 +1,11 @@
-const puppeteer = require('puppeteer')
+const swaggerUi = require('swagger-ui-express')
+try {
+    const puppeteer = process.argv.includes('--swagger-only') ? {
+        launch: Object
+    } : require('puppeteer')
+} catch (e) {
+    console.log("\033[31mTry adding '--swagger-only' option for testing or 'npm install puppeteer' instead\033[0m", e)
+}
 const express = require('express')
 const path = require('path')
 const PORT = process.env.PORT || 5000
@@ -7,12 +14,20 @@ const CONSTANT = {
         png: 'image/png',
         jpg: 'image/jpeg',
         jpeg: 'image/jpeg',
-        webp: 'image/webp'
+        webp: 'image/webp',
+        'image/png': 'image/png',
+        'image/jpg': 'image/jpeg',
+        'image/jpeg': 'image/jpeg',
+        'image/webp': 'image/webl'
     }
 }
 
 const app = express()
     .use(express.static(path.join(__dirname, 'public')))
+    .use((req, res, next) => {
+        if (req.url === '/swagger.json') res.sendFile(path.join(__dirname, 'swagger.json'))
+        else next()
+    })
     .set('views', path.join(__dirname, 'views'))
     .set('view engine', 'ejs')
     .get('/', (req, res) => res.render('index'))
@@ -48,18 +63,18 @@ const app = express()
                 res.writeHead(200, {
                     'Content-Type': CONSTANT.mimetype[type],
                     'Content-Length': screenshot.length
-                });
+                })
                 res.end(screenshot)
             } else {
-                res.status(501).json({
+                res.status(400).json({
                     error: 'parameter \'url\' not provided',
                     hint: '/api/ssweb?url=http://example.com',
-                    status: 501
+                    status: 400
                 })
             }
         } catch (e) {
             res.status(501).json({
-                error: e,
+                error: e.toString(),
                 status: 501
             })
         }
@@ -96,7 +111,7 @@ const app = express()
                     error: 'Timeout limit exceeded',
                     status: 201
                 })
-            }, 120000)
+            }, 60000)
             const base64 = await page.evaluate(async function(code, mimetype, quality, slog) {
                 let c = document.createElement('canvas')
                 let ctx = c.getContext('2d')
@@ -114,11 +129,24 @@ const app = express()
             res.end(image)
         } catch (e) {
             res.status(501).json({
-                error: e,
+                error: e.toString(),
                 status: 501
             })
         }
     })
+    .use('/api', swaggerUi.serve)
+    .get('/api', swaggerUi.setup(null, false, options = {
+        validatorUrl: null,
+        docExpansion: 'full',
+        operationsSorter: function(a, b) {
+            var score = {
+                '/api/ssweb': 1,
+                '/api/canvas': 2,
+            }
+            // console.log('a', a.get("path"), b.get("path"))
+            return score[a.get("path")] < score[b.get("path")]
+        }
+    }, '.swagger-ui .topbar { background-color: #0099FF }', null, '/swagger.json'))
     .get('*', function(req, res) {
         res.status(404).json({
             error: 'Page you are looking for is not found',
@@ -127,7 +155,7 @@ const app = express()
         })
     })
     .listen(PORT, () => console.log(`Listening on ${ PORT }`))
-const io = require('socket.io')(app);
+const io = require('socket.io')(app)
 
 //listen on every connection
 io.on('connection', socket => {
