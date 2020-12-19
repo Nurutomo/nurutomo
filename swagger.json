@@ -70,59 +70,59 @@
                 "summary": "Returns Screenshot Image from Website",
                 "operationId": "get_ssweb",
                 "parameters": [{
-                        "description": "Your javascript code with canvas element\nVariables:\n- c (CanvasDOMElement)\n- ctx (Canvas Context)",
-                        "name": "code",
-                        "type": "string",
-                        "in": "query"
-                    }, {
-                        "description": "Result Image Format",
-                        "name": "type",
-                        "type": "string",
-                        "enum": ["png", "jpeg", "webp"],
-                        "in": "query"
-                    }, {
-                        "description": "JPEG Image Quality",
-                        "name": "quality",
-                        "type": "float32",
-                        "minimal": 0.0,
-                        "maximal": 1.0,
-                        "in": "query"
-                    },
-                    "responses": {
-                        "200": {
-                            "description": "Successfully Drawing",
-                            "content": {
-                                "image/*": {
-                                    "type": "string",
-                                    "format": "binary"
-                                }
+                    "description": "Your javascript code with canvas element\nVariables:\n- c (CanvasDOMElement)\n- ctx (Canvas Context)",
+                    "name": "code",
+                    "type": "string",
+                    "in": "query"
+                }, {
+                    "description": "Result Image Format",
+                    "name": "type",
+                    "type": "string",
+                    "enum": ["png", "jpeg", "webp"],
+                    "in": "query"
+                }, {
+                    "description": "JPEG Image Quality",
+                    "name": "quality",
+                    "type": "float32",
+                    "minimal": 0.0,
+                    "maximal": 1.0,
+                    "in": "query"
+                }],
+                "responses": {
+                    "200": {
+                        "description": "Successfully Drawing",
+                        "content": {
+                            "image/*": {
+                                "type": "string",
+                                "format": "binary"
                             }
                         }
-                    },
-                    "tags": ["Chrome"]
-                }
-            }
-        },
-        "info": {
-            "title": "Nurutomo API",
-            "version": "1.0",
-            "description": "Media manipulation API"
-        },
-        "produces": ["application/json", "image/*"],
-        "consumes": ["application/json"],
-        "tags": [{
-            "name": "Chrome",
-            "description": "This API uses Chromium to work (Puppeteer)"
-        }],
-        "responses": {
-            "501": {
-                "description": "Internal Server Error"
-            },
-            "ParseError": {
-                "description": "Cannot parse this"
-            },
-            "MaskError": {
-                "description": "There was an error"
+                    }
+                },
+                "tags": ["Chrome"]
             }
         }
+    },
+    "info": {
+        "title": "Nurutomo API",
+        "version": "1.0",
+        "description": "Media manipulation API"
+    },
+    "produces": ["application/json", "image/*"],
+    "consumes": ["application/json"],
+    "tags": [{
+        "name": "Chrome",
+        "description": "This API uses Chromium to work (Puppeteer)"
+    }],
+    "responses": {
+        "501": {
+            "description": "Internal Server Error"
+        },
+        "ParseError": {
+            "description": "Cannot parse this"
+        },
+        "MaskError": {
+            "description": "There was an error"
+        }
     }
+}
