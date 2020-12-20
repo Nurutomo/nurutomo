@@ -103,6 +103,7 @@ const app = express()
             const browser = await getBrowser()
 
             const page = await browser.newPage()
+            page.on('console', l => log('[CHROME]', l._type, l._text))
             code = `try{\n${code}\n} catch (e) {\n console.error(e)\n}`
             log(code)
             let timeout = setTimeout(() => {
