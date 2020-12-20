@@ -8,6 +8,7 @@ try {
     console.log("\033[31mTry adding '--swagger-only' option for testing or 'npm install puppeteer' instead\033[0m", e)
 }
 const express = require('express')
+const bodyParser = require('body-parser')
 const path = require('path')
 const PORT = process.env.PORT || 5000
 const CONSTANT = {
@@ -29,7 +30,11 @@ const app = express()
         if (req.url === '/swagger.json') res.sendFile(path.join(__dirname, 'swagger.json'))
         else next()
     })
-    .set('views', path.join(__dirname, 'views'))
+    .use(bodyParser.urlencoded({
+        extended: true
+    }));
+.use(bodyParser.raw());
+.set('views', path.join(__dirname, 'views'))
     .set('view engine', 'ejs')
     .get('/', (req, res) => res.render('index'))
     .get('/api/ssweb', async (req, res) => {
