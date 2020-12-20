@@ -32,9 +32,9 @@ const app = express()
     })
     .use(bodyParser.urlencoded({
         extended: true
-    }));
-.use(bodyParser.raw());
-.set('views', path.join(__dirname, 'views'))
+    }))
+    .use(bodyParser.raw())
+    .set('views', path.join(__dirname, 'views'))
     .set('view engine', 'ejs')
     .get('/', (req, res) => res.render('index'))
     .get('/api/ssweb', async (req, res) => {
