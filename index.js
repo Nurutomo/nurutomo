@@ -103,7 +103,7 @@ const app = express()
             const browser = await getBrowser()
 
             const page = await browser.newPage()
-            code = `try{\n${code}\n} catch (e) {\n slog(e)\n}`
+            code = `try{\n${code}\n} catch (e) {\n console.error(e)\n}`
             log(code)
             let timeout = setTimeout(() => {
                 log('timed out')
@@ -116,9 +116,9 @@ const app = express()
             const base64 = await page.evaluate(async function(code, mimetype, quality, slog) {
                 let c = document.createElement('canvas')
                 let ctx = c.getContext('2d')
-                await (new(async () => {}).constructor('c', 'ctx', 'Image', 'slog', code))(c, ctx, Image, slog)
+                await (new(async () => {}).constructor('c', 'ctx', 'Image', code))(c, ctx, Image)
                 return (/png/.test(mimetype) ? c.toDataURL(mimetype) : c.toDataURL(mimetype, quality)).split `,` [1]
-            }, code, mimetype, quality, console.log)
+            }, code, mimetype, quality)
             clearTimeout(timeout)
             await browser.close()
             const image = Buffer.from(base64, 'base64')
