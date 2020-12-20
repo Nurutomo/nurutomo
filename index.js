@@ -1,14 +1,28 @@
 const swaggerUi = require('swagger-ui-express')
+let swaggerOnly = process.argv.includes('--swagger-only')
 let puppeteer
 try {
-    puppeteer = process.argv.includes('--swagger-only') ? {
-        launch: Object
+    puppeteer = swaggerOnly ? {
+        launch: (...args) => {
+            log('[PuPsIm]', ...args)
+            return {
+                newPage: (...args) => {
+                    log('[PuPsIm]', ...args)
+                    return {
+                        goto: (...args) => log('[PuPsIm]', ...args),
+                        screenshot: (...args) => log('[PuPsIm]', ...args),
+                        evaluate: (...args) => log('[PuPsIm]', ...args),
+                        on: (...args) => log('[PuPsIm]', ...args)
+                    }
+                },
+                close: () => {}
+            }
+        }
     } : require('puppeteer')
 } catch (e) {
     console.log("\033[31mTry adding '--swagger-only' option for testing or 'npm install puppeteer' instead\033[0m", e)
 }
 const express = require('express')
-const bodyParser = require('body-parser')
 const path = require('path')
 const PORT = process.env.PORT || 5000
 const CONSTANT = {
@@ -30,10 +44,7 @@ const app = express()
         if (req.url === '/swagger.json') res.sendFile(path.join(__dirname, 'swagger.json'))
         else next()
     })
-    .use(bodyParser.urlencoded({
-        extended: true
-    }))
-    .use(bodyParser.raw())
+    .use(express.text())
     .set('views', path.join(__dirname, 'views'))
     .set('view engine', 'ejs')
     .get('/', (req, res) => res.render('index'))
@@ -61,7 +72,7 @@ const app = express()
                     timeout: 300000
                 })
                 if (delay > 0) await sleep(delay)
-                const screenshot = await page.screenshot({
+                const screenshot = swaggerOnly ? Buffer.from(type) : await page.screenshot({
                     type,
                     fullPage: full ? full != 'false' : false
                 })
@@ -86,6 +97,7 @@ const app = express()
         }
     })
     .post('/api/canvas', async (req, res) => {
+        let timeout
         try {
             let {
                 apikey,
@@ -97,6 +109,7 @@ const app = express()
                 ...req.query
             }
             let code = req.body
+            log(req, req.body)
             if (process.env.API_KEY && process.env.API_KEY != apikey) return res.json({
                 result: 'apikey invalid'
             })
@@ -110,7 +123,7 @@ const app = express()
             page.on('console', l => log('[CHROME]', l._type, l._text))
             code = `try{\n${code}\n} catch (e) {\n console.error(e)\n}`
             log(code)
-            let timeout = setTimeout(() => {
+            timeout = setTimeout(() => {
                 log('timed out')
                 browser.close()
                 res.status(201).json({
@@ -126,7 +139,7 @@ const app = express()
             }, code, mimetype, quality)
             clearTimeout(timeout)
             await browser.close()
-            const image = Buffer.from(base64, 'base64')
+            const image = swaggerOnly ? Buffer.from(type) : Buffer.from(base64, 'base64')
             log(image)
             res.writeHead(200, {
                 'Content-Type': mimetype,
@@ -134,6 +147,7 @@ const app = express()
             })
             res.end(image)
         } catch (e) {
+            clearTimeout(timeout)
             res.status(501).json({
                 error: e.toString(),
                 status: 501
