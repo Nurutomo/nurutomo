@@ -33,7 +33,8 @@
                     "name": "type",
                     "type": "string",
                     "enum": ["png", "jpeg"],
-                    "in": "query"
+                    "in": "query",
+                    "default": "png"
                 }, {
                     "description": "JPEG Image Quality",
                     "name": "quality",
@@ -66,20 +67,23 @@
             }
         },
         "/canvas": {
-            "get": {
+            "post": {
                 "summary": "Returns Screenshot Image from Website",
                 "operationId": "get_ssweb",
+                "consumes": "text/plain",
                 "parameters": [{
                     "description": "Your javascript code with canvas element\nVariables:\n- c (CanvasDOMElement)\n- ctx (Canvas Context)",
                     "name": "code",
                     "type": "string",
-                    "in": "query"
+                    "in": "body",
+                    "default": "c.width = c.height = 512;\n\nctx.fillStyle = \"#0099FF\";\nctx.fillRect(128, 128, 128, 128);"
                 }, {
                     "description": "Result Image Format",
                     "name": "type",
                     "type": "string",
                     "enum": ["png", "jpeg", "webp"],
-                    "in": "query"
+                    "in": "query",
+                    "default": "png"
                 }, {
                     "description": "JPEG Image Quality",
                     "name": "quality",
@@ -108,8 +112,8 @@
         "version": "1.0",
         "description": "Media manipulation API"
     },
-    "produces": ["application/json", "image/*"],
-    "consumes": ["application/json"],
+    "produces": ["image/*", "application/json"],
+    "consumes": ["plain/text"],
     "tags": [{
         "name": "Chrome",
         "description": "This API uses Chromium to work (Puppeteer)"

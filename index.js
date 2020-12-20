@@ -80,19 +80,18 @@ const app = express()
             })
         }
     })
-    .get('/api/canvas', async (req, res) => {
+    .post('/api/canvas', async (req, res) => {
         try {
             let {
-                code,
                 apikey,
                 type,
                 quality
             } = {
-                code: '',
                 type: 'png',
                 quality: 0.92,
                 ...req.query
             }
+            let code = req.body
             if (process.env.API_KEY && process.env.API_KEY != apikey) return res.json({
                 result: 'apikey invalid'
             })
