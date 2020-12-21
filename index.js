@@ -109,7 +109,6 @@ const app = express()
                 ...req.query
             }
             let code = req.body
-            log(req, req.body)
             if (process.env.API_KEY && process.env.API_KEY != apikey) return res.json({
                 result: 'apikey invalid'
             })
@@ -130,13 +129,18 @@ const app = express()
                     error: 'Timeout limit exceeded',
                     status: 201
                 })
-            }, 60000)
-            const base64 = await page.evaluate(async function(code, mimetype, quality, slog) {
-                let c = document.createElement('canvas')
-                let ctx = c.getContext('2d')
-                await (new(async () => {}).constructor('c', 'ctx', 'Image', code))(c, ctx, Image)
-                return (/png/.test(mimetype) ? c.toDataURL(mimetype) : c.toDataURL(mimetype, quality)).split `,` [1]
+            }, 24000)
+            const base64 = await page.evaluate(async function(code, mimetype, quality) {
+                try {
+                    let c = document.createElement('canvas')
+                    let ctx = c.getContext('2d')
+                    await (new(async () => {}).constructor('c', 'ctx', 'Image', code))(c, ctx, Image)
+                    return (/png/.test(mimetype) ? c.toDataURL(mimetype) : c.toDataURL(mimetype, quality)).split `,` [1]
+                } catch (e) {
+                    return e.toString()
+                }
             }, code, mimetype, quality)
+            if (/error\:/i.test(base64)) throw base64
             clearTimeout(timeout)
             await browser.close()
             const image = swaggerOnly ? Buffer.from(type) : Buffer.from(base64, 'base64')
