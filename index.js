@@ -150,7 +150,7 @@ const app = express()
                             img.onload = () => resolve(img)
                         })
                     }
-                    await (new(async () => {}).constructor('c', 'ctx', 'Image', code))(c, ctx, Image)
+                    await (new(async () => {}).constructor('c', 'ctx', 'Image', 'loadImg', code))(c, ctx, Image, loadImg)
                     return (/png/.test(mimetype) ? c.toDataURL(mimetype) : c.toDataURL(mimetype, quality)).split `,` [1]
                 } catch (e) {
                     return e.toString()
