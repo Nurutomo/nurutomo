@@ -22,6 +22,7 @@ try {
 } catch (e) {
     console.log("\033[31mTry adding '--swagger-only' option for testing or 'npm install puppeteer' instead\033[0m", e)
 }
+const fetch = require('node-fetch')
 const express = require('express')
 const path = require('path')
 const PORT = process.env.PORT || 5000
@@ -130,10 +131,25 @@ const app = express()
                     status: 201
                 })
             }, 24000)
+            await page.exposeFunction('nodeFetch', fetch)
+            await page.exposeFunction('loadToDataURI', async function(url) {
+                let res = await fetch(url)
+                let buf = await res.buffer()
+                return buf.toString('base64')
+            })
             const base64 = await page.evaluate(async function(code, mimetype, quality) {
                 try {
                     let c = document.createElement('canvas')
                     let ctx = c.getContext('2d')
+
+                    function loadImg(url) {
+                        return new Promise(resolve => {
+                            let img = new Image()
+                            img.crossOrigin = "Anonymous"
+                            img.src = url
+                            img.onload = () => resolve(img)
+                        })
+                    }
                     await (new(async () => {}).constructor('c', 'ctx', 'Image', code))(c, ctx, Image)
                     return (/png/.test(mimetype) ? c.toDataURL(mimetype) : c.toDataURL(mimetype, quality)).split `,` [1]
                 } catch (e) {
@@ -213,5 +229,5 @@ async function getBrowser(opts = {}) {
 }
 
 function log(...args) {
-    console.log('\033[42mLOG\033[49m \033[33m%s\033[39m\n<', new Date(), ...args)
+    console.log('\033[42mLOG\033[49m \033[33m%s\033[39m\n', new Date(), ...args)
 }

@@ -1,9 +1,15 @@
 {
     "swagger": "2.0",
     "basePath": "/api",
-    "servers": [
-        "https:\/\/nurutomo.herokuapp.com\/",
-        "http:\/\/localhost:5000"
+    "servers": [{
+            "url": "https:\/\/nurutomo.herokuapp.com\/"
+        },
+        {
+            "url": "http:\/\/localhost:5000"
+        },
+        {
+            "url": "/"
+        }
     ],
     "paths": {
         "/ssweb": {
@@ -34,7 +40,7 @@
                     "type": "string",
                     "enum": ["png", "jpeg"],
                     "in": "query",
-		    "default": "png"
+                    "default": "png"
                 }, {
                     "description": "JPEG Image Quality",
                     "name": "quality",
@@ -68,24 +74,24 @@
         },
         "/canvas": {
             "post": {
-                "summary": "Returns Screenshot Image from Website",
+                "summary": "Returns Image from Canvas using '.toDataURL()",
                 "operationId": "get_ssweb",
-		"consumes": ["text/plain; charset=utf-8"],
-		"produces": ["image/*", "application/json"],
+                "consumes": ["text/plain; charset=utf-8"],
+                "produces": ["image/*", "application/json"],
                 "parameters": [{
-                    "description": "Your javascript code with canvas element\nVariables:\n- c (CanvasDOMElement)\n- ctx (Canvas Context)",
+                    "description": "Your javascript code with canvas element\nProvided Variables:\n- c (CanvasDOMElement)\n- ctx (Canvas Context)\n\nProvided Functions:\n- nodeFetch (fetch, but from NodeJS)\n- load2DataURI (nodeFetch base64)\n- loadImg (load Image from URL)",
                     "name": "body",
-		    "consumes": ["text/plain; charset=utf-8"],
+                    "consumes": ["text/plain; charset=utf-8"],
                     "type": "string",
                     "in": "body",
-		    "example": "c.width = c.height = 512;\n\nctx.fillStyle = \"#0099FF\";\nctx.fillRect(128, 128, 128, 128);"
+                    "example": "c.width = c.height = 512;\n\nctx.fillStyle = \"#0099FF\";\nctx.fillRect(128, 128, 128, 128);"
                 }, {
                     "description": "Result Image Format",
                     "name": "type",
                     "type": "string",
                     "enum": ["png", "jpeg", "webp"],
                     "in": "query",
-		    "default": "png"
+                    "default": "png"
                 }, {
                     "description": "JPEG Image Quality",
                     "name": "quality",
