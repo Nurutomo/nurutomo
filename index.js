@@ -145,6 +145,7 @@ const app = express()
             await browser.close()
             const image = swaggerOnly ? Buffer.from(type) : Buffer.from(base64, 'base64')
             log(image)
+            if (res.headersSent) return
             res.writeHead(200, {
                 'Content-Type': mimetype,
                 'Content-Length': image.length
